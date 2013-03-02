@@ -48,7 +48,6 @@ class ZookeeperUtils(config: Configuration) extends Closeable with Logging with 
 
   def getIntIdForRow(row: String): String = {
     // See if we al ready have this row in the index so that we don't duplicate it.
-    log.info("Table name: " + conf.get(Constants.HBASE_TABLE_NAME))
     using(new HTable(conf, conf.get(Constants.HBASE_TABLE_NAME)))(table => {
       val get = new Get(Bytes.toBytes(row))
       get.addFamily(Constants.ITEM_INT.getBytes)

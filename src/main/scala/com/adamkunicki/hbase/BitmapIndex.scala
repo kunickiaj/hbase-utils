@@ -2,8 +2,8 @@ package com.adamkunicki.hbase
 
 import org.apache.hadoop.hbase.client.{Put, HTable}
 import org.apache.hadoop.hbase.HBaseConfiguration
-import java.io.Closeable
 import scala.collection.JavaConverters._
+import java.io.Closeable
 
 trait BitmapIndex extends Closeable with Resources {
   protected val conf = HBaseConfiguration.create()
@@ -14,7 +14,7 @@ trait BitmapIndex extends Closeable with Resources {
 
   def createTableHandle: HTable
 
-  def addToIndex(item: String, terms: Seq[String]) = {
+  def addToIndex(item: String, terms: Seq[String]) {
     val intId = zkUtils.getIntIdForRow(item).getBytes
 
     val intPut = new Put(intId)
