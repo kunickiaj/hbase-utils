@@ -14,12 +14,8 @@ trait BitmapIndex extends Closeable with Resources {
 
   def createTableHandle: HTable
 
-  def normalizedInt(int: Int): Array[Byte] = {
-    "%010d".format(int).getBytes()
-  }
-
   def addToIndex(item: String, terms: Seq[String]) = {
-    val intId = normalizedInt(zkUtils.getIntIdForRow(item))
+    val intId = zkUtils.getIntIdForRow(item).getBytes
 
     val intPut = new Put(intId)
     intPut.add(Constants.INT_ITEM.getBytes, item.getBytes, item.getBytes)

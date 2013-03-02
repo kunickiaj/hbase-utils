@@ -7,18 +7,20 @@ import com.netflix.curator.framework.CuratorFrameworkFactory
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.hbase.client.{Get, HTable}
 import org.apache.hadoop.hbase.util.Bytes
-import com.netflix.curator.framework.recipes.atomic.{DistributedAtomicInteger, CachedAtomicInteger, AtomicValue}
+import com.netflix.curator.framework.recipes.atomic.{DistributedAtomicInteger, CachedAtomicInteger}
+import org.apache.hadoop.hbase.regionserver.NoSuchColumnFamilyException
 
 /**
  * Utility class to fetch a unique integer id (bitmap position) for each row indexed.
- * @param conf HBase configuration file
+ * @param config HBase configuration file
  */
-class ZookeeperUtils(conf: Configuration) extends Closeable with Logging with Resources {
+class ZookeeperUtils(config: Configuration) extends Closeable with Logging with Resources {
   private val cacheSize = 100
   private val totalRetries = 10
   private val secondsBetweenRetries = 1
   private val totalRetryTime = totalRetries * secondsBetweenRetries
   private val retryPolicy: RetryPolicy = new RetryUntilElapsed(totalRetryTime, secondsBetweenRetries)
+  private val conf = config
   private val curatorClient = {
     val client = CuratorFrameworkFactory.newClient(conf.get(Constants.HBASE_ZOOKEEPER_QUORUM), retryPolicy)
     client.start()
@@ -44,15 +46,21 @@ class ZookeeperUtils(conf: Configuration) extends Closeable with Logging with Re
     }
   }
 
-  def getIntIdForRow(row: String): Int = {
+  def getIntIdForRow(row: String): String = {
     // See if we al ready have this row in the index so that we don't duplicate it.
     log.info("Table name: " + conf.get(Constants.HBASE_TABLE_NAME))
     using(new HTable(conf, conf.get(Constants.HBASE_TABLE_NAME)))(table => {
       val get = new Get(Bytes.toBytes(row))
       get.addFamily(Constants.ITEM_INT.getBytes)
-      val result = table.get(get)
-      if (!result.isEmpty) {
-        return Bytes.toInt(result.value())
+      try {
+        val result = table.get(get)
+        if (!result.isEmpty) {
+          return Bytes.toString(result.value())
+        }
+      } catch {
+        case e: NoSuchColumnFamilyException => {
+          log.debug("Likely the first entry in the table. This can usually be ignored.", e)
+        }
       }
     })
 
@@ -61,7 +69,11 @@ class ZookeeperUtils(conf: Configuration) extends Closeable with Logging with Re
     if (!intId.succeeded()) {
       throw new IOException("Failed to acquire new id")
     }
-    intId.postValue()
+    normalizedInt(intId.postValue())
+  }
+
+  def normalizedInt(int: Int): String = {
+    "%010d".format(int)
   }
 
   def close() = {
