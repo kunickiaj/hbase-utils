@@ -1,4 +1,4 @@
-package com.adamkunicki.hbase
+package com.adamkunicki.util
 
 import java.io.Closeable
 

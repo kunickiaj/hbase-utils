@@ -55,6 +55,12 @@
             <version>1.3.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.adamkunicki</groupId>
+            <artifactId>coprocessor</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Test -->
         <dependency>
             <groupId>junit</groupId>

@@ -4,6 +4,7 @@ import org.apache.hadoop.hbase.client.{Put, HTable}
 import org.apache.hadoop.hbase.HBaseConfiguration
 import scala.collection.JavaConverters._
 import java.io.Closeable
+import com.adamkunicki.util.Resources
 
 trait BitmapIndex extends Closeable with Resources {
   protected val conf = HBaseConfiguration.create()

@@ -9,6 +9,7 @@ import org.apache.hadoop.hbase.client.{Get, HTable}
 import org.apache.hadoop.hbase.util.Bytes
 import com.netflix.curator.framework.recipes.atomic.{DistributedAtomicInteger, CachedAtomicInteger}
 import org.apache.hadoop.hbase.regionserver.NoSuchColumnFamilyException
+import com.adamkunicki.util.{Logging, Resources}
 
 /**
  * Utility class to fetch a unique integer id (bitmap position) for each row indexed.

@@ -18,8 +18,8 @@
     </properties>
 
     <modules>
-        <module>client</module>
         <module>coprocessor</module>
+        <module>client</module>
     </modules>
 
    <repositories>

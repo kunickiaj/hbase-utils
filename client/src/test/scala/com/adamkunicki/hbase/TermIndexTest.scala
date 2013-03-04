@@ -1,6 +1,7 @@
 package com.adamkunicki.hbase
 
 import org.scalatest.FunSuite
+import com.adamkunicki.util.{Logging, Resources}
 
 class TermIndexTest extends FunSuite with Logging with Resources {
 
