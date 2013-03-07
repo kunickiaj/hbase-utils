@@ -22,7 +22,7 @@
         <module>client</module>
     </modules>
 
-   <repositories>
+    <repositories>
         <repository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
@@ -39,7 +39,7 @@
         </repository>
     </repositories>
 
-   <pluginRepositories>
+    <pluginRepositories>
         <pluginRepository>
             <id>scala-tools.org</id>
             <name>Scala-Tools Maven2 Repository</name>
@@ -49,6 +49,11 @@
             <id>sonatype</id>
             <name>Sonatype</name>
             <url>http://repository.sonatype.org/content/groups/public/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>kiji-plugins</id>
+            <name>kiji-plugins</name>
+            <url>https://repo.wibidata.com/artifactory/kiji</url>
         </pluginRepository>
     </pluginRepositories>
 

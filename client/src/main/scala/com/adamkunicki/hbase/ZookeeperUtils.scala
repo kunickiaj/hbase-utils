@@ -13,15 +13,15 @@ import com.adamkunicki.util.{Logging, Resources}
 
 /**
  * Utility class to fetch a unique integer id (bitmap position) for each row indexed.
- * @param config HBase configuration file
+ * @param conf HBase configuration file
  */
-class ZookeeperUtils(config: Configuration) extends Closeable with Logging with Resources {
-  private val cacheSize = 100
-  private val totalRetries = 10
-  private val secondsBetweenRetries = 1
+class ZookeeperUtils(private val conf: Configuration,
+                     val cacheSize: Int = 100,
+                     val totalRetries: Int = 10,
+                     val secondsBetweenRetries: Int = 1) extends Closeable with Logging with Resources {
+
   private val totalRetryTime = totalRetries * secondsBetweenRetries
   private val retryPolicy: RetryPolicy = new RetryUntilElapsed(totalRetryTime, secondsBetweenRetries)
-  private val conf = config
   private val curatorClient = {
     val client = CuratorFrameworkFactory.newClient(conf.get(Constants.HBASE_ZOOKEEPER_QUORUM), retryPolicy)
     client.start()
