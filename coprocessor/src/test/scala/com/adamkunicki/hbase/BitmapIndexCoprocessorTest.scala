@@ -6,6 +6,7 @@ import org.apache.hadoop.hbase.client.HTable
 import org.apache.hadoop.hbase.client.coprocessor.Batch.Call
 import com.googlecode.javaewah.EWAHCompressedBitmap
 import org.scalatest.FunSuite
+import com.adamkunicki.hbase.EWAHCompressedBitmapImplicit._
 
 class BitmapIndexCoprocessorTest extends FunSuite with Logging with Resources {
 
@@ -34,14 +35,8 @@ class BitmapIndexCoprocessorTest extends FunSuite with Logging with Resources {
 
 
     println("Matching keys:")
-    val bmpIterator = bitmap.intIterator()
-    while (bmpIterator.hasNext) {
-      println(bmpIterator.next())
-    }
-
-    //    val testUtil = new HBaseTestingUtility()
-    //    testUtil.startMiniCluster()
-    //    val table = testUtil.createTable("mytable".getBytes, "test".getBytes)
+    val intIds: List[Int] = bitmap
+    intIds.map(int => println(int))
   }
 
 }

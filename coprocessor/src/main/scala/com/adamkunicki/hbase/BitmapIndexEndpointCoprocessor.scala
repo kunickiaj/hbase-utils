@@ -11,8 +11,15 @@ import org.apache.hadoop.hbase.util.Bytes
 import scala.collection.JavaConverters._
 
 class BitmapIndexEndpointCoprocessor extends BaseEndpointCoprocessor with BitmapIndexProtocol with Logging {
+  def matchesAllTerms(terms: Seq[String]) = {
+    matchesTerms(terms, (bitmap: EWAHCompressedBitmap, otherBitmap: EWAHCompressedBitmap) => bitmap.and(otherBitmap))
+  }
 
-  def matchesAllTerms(terms: Seq[String]): EWAHCompressedBitmap = {
+  def matchesAnyTerms(terms: Seq[String]) = {
+    matchesTerms(terms, (bitmap: EWAHCompressedBitmap, otherBitmap: EWAHCompressedBitmap) => bitmap.or(otherBitmap))
+  }
+
+  def matchesTerms(terms: Seq[String], matchFunc: (EWAHCompressedBitmap, EWAHCompressedBitmap) => EWAHCompressedBitmap): EWAHCompressedBitmap = {
     log.debug("Entered coprocessor!")
 
     var bitmaps: List[EWAHCompressedBitmap] = List.empty
@@ -51,8 +58,7 @@ class BitmapIndexEndpointCoprocessor extends BaseEndpointCoprocessor with Bitmap
     var finalBitmap = bitmaps(0)
     log.debug("Initial final bitmap")
     for (idx <- 1 until bitmaps.length) {
-      log.debug("Anding next bitmap on same region")
-      finalBitmap = finalBitmap.and(bitmaps(idx))
+      finalBitmap = matchFunc(finalBitmap, bitmaps(idx))
     }
 
     finalBitmap
