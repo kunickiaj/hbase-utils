@@ -6,19 +6,11 @@ import org.apache.hadoop.hbase.client.Scan
 import java.util
 import org.apache.hadoop.hbase.KeyValue
 import com.adamkunicki.util.Logging
-import java.lang.String
 import org.apache.hadoop.hbase.util.Bytes
 import scala.collection.JavaConverters._
+import scala.Predef._
 
 class BitmapIndexEndpointCoprocessor extends BaseEndpointCoprocessor with BitmapIndexProtocol with Logging {
-  def matchesAllTerms(terms: Seq[String]) = {
-    matchesTerms(terms, (bitmap: EWAHCompressedBitmap, otherBitmap: EWAHCompressedBitmap) => bitmap.and(otherBitmap))
-  }
-
-  def matchesAnyTerms(terms: Seq[String]) = {
-    matchesTerms(terms, (bitmap: EWAHCompressedBitmap, otherBitmap: EWAHCompressedBitmap) => bitmap.or(otherBitmap))
-  }
-
   def matchesTerms(terms: Seq[String], matchFunc: (EWAHCompressedBitmap, EWAHCompressedBitmap) => EWAHCompressedBitmap): EWAHCompressedBitmap = {
     log.debug("Entered coprocessor!")
 

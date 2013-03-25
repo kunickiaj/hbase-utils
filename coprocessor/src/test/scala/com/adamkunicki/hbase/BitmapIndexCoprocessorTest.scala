@@ -21,15 +21,19 @@ class BitmapIndexCoprocessorTest extends FunSuite with Logging with Resources {
 
     val result = table.coprocessorExec(classOf[BitmapIndexProtocol], null, null, new Call[BitmapIndexProtocol, EWAHCompressedBitmap] {
       def call(instance: BitmapIndexProtocol): EWAHCompressedBitmap = {
-        instance.matchesAllTerms(List("A", "B", "F"))
+        instance.matchesTerms(List("A", "B", "F"),
+          (bitmap: EWAHCompressedBitmap, otherBitmap: EWAHCompressedBitmap) => bitmap.or(otherBitmap))
       }
     })
 
+    // Iterator represents resulting bitmap from each Region
     val it = result.entrySet().iterator()
     println("Got result iterator")
     var bitmap = it.next().getValue
     while (it.hasNext) {
       println("Got more results")
+      // Here we're ANDing the bitmaps from each Region as we're interested in matchesAllTerms
+      // This will be wrapped up for convenience in the client API.
       bitmap = bitmap.and(it.next().getValue)
     }
 
